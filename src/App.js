@@ -1,23 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
 
 function App() {
+  const [loading, setLoading] = useState(true);
+  const [movies, setMovies] = useState([]);
+  useEffect(() => {
+    fetch(
+      `https://yts.mx/api/v2/list_movies.json?minimum_rating=8.5&sort_by=year`
+    )
+      .then((response) => response.json())
+      .then((json) => {
+        setMovies(json.data.movies);
+        setLoading(false);
+      });
+  }, []);
+
+  console.log(movies);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {loading ? (
+        <h1>Loading!!!!!</h1>
+      ) : (
+        <div>
+          {movies.map((m) => (
+            <div key={m.id}>
+              <img src={m.medium_cover_image} />
+              <h2>{m.title}</h2>
+              <p>{m.summary}</p>
+              <ul>
+                {m.genres.map((g) => (
+                  <li key={g}>{g}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
